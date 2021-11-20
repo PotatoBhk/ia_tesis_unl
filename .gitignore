@@ -1,0 +1,9 @@
+
+*.h5
+*.prototxt
+*.caffemodel
+*.pb
+*.data-00000-of-00001
+*.index
+*.tflite
+*.weights
