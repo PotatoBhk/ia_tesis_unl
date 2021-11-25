@@ -1,6 +1,5 @@
 import time
 import cv2
-import imutils
 from imutils.video import VideoStream
 
 def detect(frm, model="", config="", conf_threshold=0.6, nms_threshold=0.4):

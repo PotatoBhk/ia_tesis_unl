@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import time
-import utils
+from utils import Utils
 
 class SSD():
     #Labels of network.
@@ -20,8 +20,6 @@ class SSD():
     _format_time = 0
 
     _net = None
-
-    utils = utils.Utils()
     
     def __init__(self, root = "./sources/ssd/"):
         self.root = root
@@ -29,8 +27,8 @@ class SSD():
     def init_model(self):
         start_time = time.time()
         #Get model's paths
-        prototxt = self.utils.join_path(self.root, self._prototxt_name)
-        weights = self.utils.join_path(self.root, self._weights_name)
+        prototxt = Utils.join_path(self.root, self._prototxt_name)
+        weights = Utils.join_path(self.root, self._weights_name)
         #Model initialization
         self._net = cv2.dnn.readNetFromCaffe(prototxt, weights)
         #Get processing time
@@ -39,7 +37,7 @@ class SSD():
     def detect(self, frame, shape = (300, 300)):      
         start_time = time.time()
         #Preprocess image
-        input = self.utils.preprocess_img(frame, shape)
+        input = Utils.preprocess_img(frame, shape)
         #Get predictions of an input      
         self._net.setInput(input)
         detections = self._net.forward()
@@ -84,3 +82,21 @@ class SSD():
             cv2.putText(frame, label, (x[0], y_lb),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
         return frame
+    
+    def set_prototxt(self, prototxt):
+        self._prototxt_name = prototxt
+    
+    def set_weights(self, weights):
+        self._weights_name = weights
+
+    def set_threshold(self, threshold):
+        self._threshold = threshold
+
+    def get_initTime(self):
+        return self._init_time
+    
+    def get_detectionTime(self):
+        return self._detection_time
+    
+    def get_postprocessTime(self):
+        return self._format_time
