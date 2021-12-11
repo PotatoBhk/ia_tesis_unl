@@ -2,12 +2,13 @@ import cherrypy
 import os, os.path
 import cv2
 from imutils.video import VideoStream
+import time
 
 class Root:
 
     @cherrypy.expose
     def index(self):
-        return open('sources/templates/index.html')
+        return open('sources/templates/ws.html')
 
     @cherrypy.expose
     def streaming(self):
@@ -20,8 +21,19 @@ class Root:
                 res = cv2.imencode('.jpeg', frame)[1].tobytes()
                 yield res
         return streamer()
+    
+    @cherrypy.expose
+    def test(self):
+        def tester():
+            cont = 0
+            while True:
+                time.sleep(1)
+                cont = cont + 1
+                yield bytes(cont)
+        return tester()
 
     streaming._cp_config = {'response.stream': True}
+    test._cp_config = {'response.stream': True}
 
 if __name__ == '__main__':
     conf = {
@@ -34,5 +46,5 @@ if __name__ == '__main__':
             'tools.staticdir.dir': './sources/templates/'
         }
     }
-    cherrypy.quickstart(Root())
+    cherrypy.quickstart(Root(), '/', conf)
 

@@ -5,7 +5,7 @@ from utils import Utils
 
 class SSD():
     #Labels of network.
-    classNames = { 0: 'background',
+    _classNames = { 0: 'background',
         1: 'aeroplane', 2: 'bicycle', 3: 'bird', 4: 'boat',
         5: 'bottle', 6: 'bus', 7: 'car', 8: 'cat', 9: 'chair',
         10: 'cow', 11: 'diningtable', 12: 'dog', 13: 'horse',
@@ -20,6 +20,8 @@ class SSD():
     _format_time = 0
 
     _net = None
+
+    _utils = Utils()
     
     def __init__(self, root = "./sources/ssd/"):
         self.root = root
@@ -27,8 +29,8 @@ class SSD():
     def init_model(self):
         start_time = time.time()
         #Get model's paths
-        prototxt = Utils.join_path(self.root, self._prototxt_name)
-        weights = Utils.join_path(self.root, self._weights_name)
+        prototxt = self._utils.join_path(self.root, self._prototxt_name)
+        weights = self._utils.join_path(self.root, self._weights_name)
         #Model initialization
         self._net = cv2.dnn.readNetFromCaffe(prototxt, weights)
         #Get processing time
@@ -37,7 +39,7 @@ class SSD():
     def detect(self, frame, shape = (300, 300)):      
         start_time = time.time()
         #Preprocess image
-        input = Utils.preprocess_img(frame, shape)
+        input = self._utils.preprocess_img(frame, shape)
         #Get predictions of an input      
         self._net.setInput(input)
         detections = self._net.forward()
