@@ -1,6 +1,12 @@
 import numpy as np
 import cv2
 import time
+import os
+
+#Processing working root path
+test_folder = os.path.dirname(__file__)
+root = os.path.join(os.path.dirname(__file__), '..')
+root = os.path.realpath(root)
 
 #Labels of network.
 classNames = { 0: 'background',
@@ -10,16 +16,19 @@ classNames = { 0: 'background',
     14: 'motorbike', 15: 'person', 16: 'pottedplant',
     17: 'sheep', 18: 'sofa', 19: 'train', 20: 'tvmonitor' }
 
+#Load test image
+image_path = os.path.join(test_folder, "media/test.jpg")
+
 #Load the Caffe model 
-prototxt = "./MobileNet-SSD/deploy.prototxt"
-weights = "./MobileNet-SSD/mobilenet_iter_73000.caffemodel"
+prototxt = os.path.join(root, "sources/ssd/deploy.prototxt")
+weights = os.path.join(root, "sources/ssd/model.caffemodel")
 
 #General params
-threshold = 0.6
+threshold = 0.5
 
 net = cv2.dnn.readNetFromCaffe(prototxt, weights)
 
-frame = cv2.imread('./result/test.jpg')
+frame = cv2.imread(image_path)
 frame_resized = cv2.resize(frame,(300,300), interpolation = cv2.INTER_CUBIC)
 blob = cv2.dnn.blobFromImage(frame_resized, 0.007843, (300, 300), (127.5, 127.5, 127.5), False)
 
