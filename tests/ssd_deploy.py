@@ -5,7 +5,7 @@ import os
 
 #Processing working root path
 test_folder = os.path.dirname(__file__)
-root = os.path.join(os.path.dirname(__file__), '..')
+root = os.path.join(test_folder, '..')
 root = os.path.realpath(root)
 
 #Labels of network.
