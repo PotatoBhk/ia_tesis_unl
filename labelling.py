@@ -84,6 +84,6 @@ generate_fig(results, target, rows)
 result_path = os.path.join(root, "training/result/img_labeled")
 aux = 1
 for result in results:
-    fig_name = os.path.join(result_path, "out-" + str(aux))
+    fig_name = os.path.join(result_path, "out-" + str(aux) + ".png")
     cv2.imwrite(fig_name,result)
     aux += 1

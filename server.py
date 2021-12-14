@@ -1,5 +1,5 @@
 from flask import Flask, render_template, Response
-from ssd import SSD
+from detect.ssd import SSD
 from imutils.video import VideoStream
 import cv2
 
