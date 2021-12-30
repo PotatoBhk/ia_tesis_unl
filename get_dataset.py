@@ -1,9 +1,9 @@
 from imutils.video import VideoStream
-import argparse
-import cv2
 from detect import yolov4
-import os
 import numpy as np
+import os
+import cv2
+import argparse
 
 parser = argparse.ArgumentParser()
 
