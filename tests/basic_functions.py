@@ -27,3 +27,7 @@ d = os.listdir(raw_path)
 for path in tqdm(d):
     print(path)
 
+#---------------------------
+print("-------------------")
+with open(os.path.join(raw_path, "readme.txt"), 'w') as f:
+    f.write('readme')
