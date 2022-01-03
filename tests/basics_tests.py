@@ -16,6 +16,5 @@ cv2.rectangle(a, (285, 175), (285 + 79, 175 + 264),
 
 cv2.imshow("frame", a) 
 
-while True:
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+cv2.waitKey(0)
+cv2.destroyAllWindows()

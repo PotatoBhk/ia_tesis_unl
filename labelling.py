@@ -82,7 +82,7 @@ def format_outs(outs, shape):
     boxes = outs[2][index]
     #Iter arrays
     for (classId, box) in zip(classesId, boxes):
-        x_center = ((box[0] + box[2])/2)/shape[1]
+        x_center = ((box[0] + box[2])/2)/shape[1] #TODO (((b - a)/2) + a) / width
         y_center = ((box[1] + box[3])/2)/shape[0]
         width = (box[0] + box[2])/shape[1]
         height = (box[1] + box[3])/shape[0]
