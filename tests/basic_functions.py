@@ -3,6 +3,8 @@ import numpy as np
 import os
 import cv2
 from tqdm import tqdm
+from random import seed
+from random import random
 
 # Managing source path
 root = os.path.dirname(__file__)
@@ -28,6 +30,16 @@ for path in tqdm(d):
     print(path)
 
 #---------------------------
-print("-------------------")
-with open(os.path.join(raw_path, "readme.txt"), 'w') as f:
-    f.write('readme')
+# print("-------------------")
+# with open(os.path.join(raw_path, "readme.txt"), 'w') as f:
+#     f.write('readme')
+
+#-------------------------
+seed(1)
+print("Random numbers: ")
+print(random())
+print(random())
+print(random())
+print(random())
+print(random())
+print(random())

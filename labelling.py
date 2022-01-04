@@ -1,9 +1,10 @@
 from detect import yolov4
+from tqdm import tqdm
 import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from tqdm import tqdm
+import random_alter
 
 # Managing source path
 root = os.path.dirname(__file__)
@@ -18,6 +19,9 @@ yolo.set_weights("pretrained_yolov4.weights")
 
 #Columns for figplot
 cols = 10
+
+# Instantiating function for random image alteration
+ra = random_alter.ImageAlt()
 
 # Function to load images
 def load_imgs(folder):
@@ -73,7 +77,7 @@ def generate_fig(imgs, target, rows):
     plt.savefig(path_dataset, dpi = 250)
 
 # Formattings outs to YoloV4 format
-def format_outs(outs, shape):
+def format_outs(outs, shape, rotated):
     text = ""
     #Filter only Person class
     index = np.argwhere(outs[0] == 0)
@@ -82,10 +86,16 @@ def format_outs(outs, shape):
     boxes = outs[2][index]
     #Iter arrays
     for (classId, box) in zip(classesId, boxes):
-        x_center = ((box[0] + box[2])/2)/shape[1] #TODO (((b - a)/2) + a) / width
-        y_center = ((box[1] + box[3])/2)/shape[0]
-        width = (box[0] + box[2])/shape[1]
-        height = (box[1] + box[3])/shape[0]
+        if rotated:
+            y_center = ((box[2]/2) + box[0])/shape[1] #TODO (((b - a)/2) + a) / width
+            x_center = ((box[3]/2) + box[1])/shape[0]
+            height = box[2]/shape[1]
+            width = box[3]/shape[0]
+        else:
+            x_center = ((box[2]/2) + box[0])/shape[1]
+            y_center = ((box[3]/2) + box[1])/shape[0]
+            width = box[2]/shape[1]
+            height = box[3]/shape[0]
         text += str(classId) + " "
         text += str(x_center) + " "
         text += str(y_center) + " "
@@ -107,9 +117,9 @@ yolo.initModel()
 print("Generación del formato de etiquetas y alteración aleatoria de imágenes: ")
 for img in tqdm(imgs):
     outs = yolo.detect(img)
-    #TODO Random alter image
+    (img, rotated) = ra.random_alter(img)
     results.append(img)
-    strings.append(format_outs(outs, img.shape))
+    strings.append(format_outs(outs, img.shape, rotated))
 
 # Save the labeled dataset
 print("Generación de figura de dataset procesado: ")
