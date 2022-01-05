@@ -21,12 +21,13 @@ class ImageAlt():
       return image_rot
 
     def random_alter(self, image):
-      rotated = False
+      modified = 0
       n = np.round(random(), 2)
       res = image
       if n >= 0.25 and n < 0.50:
         res = self.adjust_gamma(image, (random()*0.3))
+        modified = 1
       elif n < 0.25:
         res = self.rotate_image(image)
-        rotated = True
-      return (res, rotated)
+        modified = 2
+      return (res, modified)

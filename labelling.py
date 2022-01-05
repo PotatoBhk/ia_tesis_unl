@@ -77,7 +77,7 @@ def generate_fig(imgs, target, rows):
     plt.savefig(path_dataset, dpi = 250)
 
 # Formattings outs to YoloV4 format
-def format_outs(outs, shape, rotated):
+def format_outs(outs, shape, modified):
     text = ""
     #Filter only Person class
     index = np.argwhere(outs[0] == 0)
@@ -86,7 +86,7 @@ def format_outs(outs, shape, rotated):
     boxes = outs[2][index]
     #Iter arrays
     for (classId, box) in zip(classesId, boxes):
-        if rotated:
+        if modified == 2:
             y_center = ((box[2]/2) + box[0])/shape[1] #TODO (((b - a)/2) + a) / width
             x_center = ((box[3]/2) + box[1])/shape[0]
             height = box[2]/shape[1]
@@ -113,13 +113,22 @@ generate_fig(imgs, target, rows)
 #Detect objects to label in the group of images
 results = []
 strings = []
+rotaded = "Imágenes rotadas: \n"
+fix_ilum = "Imágenes con la iluminación alterada: \n"
+aux = 1
 yolo.initModel()
 print("Generación del formato de etiquetas y alteración aleatoria de imágenes: ")
 for img in tqdm(imgs):
     outs = yolo.detect(img)
-    (img, rotated) = ra.random_alter(img)
+    (img, modified) = ra.random_alter(img)
     results.append(img)
-    strings.append(format_outs(outs, img.shape, rotated))
+    strings.append(format_outs(outs, img.shape, modified))
+    if modified == 1:
+        fix_ilum += "out-" + str(aux) + "\n"
+    elif modified == 2:
+        rotaded += "out-" + str(aux) + "\n"
+    aux += 1
+
 
 # Save the labeled dataset
 print("Generación de figura de dataset procesado: ")
@@ -137,3 +146,6 @@ for (result, string) in tqdm(zip(results, strings)):
     with open(os.path.join(result_path, "out-" + str(aux) + ".txt"), 'w') as f:
         f.write(string)
     aux += 1
+
+with open(os.path.join(result_path, "imgs_modified.txt"), 'w') as f:
+    f.write(rotaded + fix_ilum)
