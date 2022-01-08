@@ -26,7 +26,7 @@ for f in tqdm(os.listdir(raw_path)):
 idx = []
 print("Comparando imágenes: ")
 for i in tqdm(range(len(imgs))):
-    for j in range((i+1), len(imgs)):
+    for j in tqdm(range((i+1), len(imgs))):
         if(imgs[i].shape == imgs[j].shape):
             # convert the images to grayscale
             a = cv2.cvtColor(imgs[i], cv2.COLOR_BGR2GRAY)

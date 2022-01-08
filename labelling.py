@@ -112,6 +112,7 @@ generate_fig(imgs, target, rows)
 
 #Detect objects to label in the group of images
 results = []
+verifications = []
 strings = []
 rotaded = "Imágenes rotadas: \n"
 fix_ilum = "Imágenes con la iluminación alterada: \n"
@@ -119,6 +120,7 @@ aux = 1
 yolo.initModel()
 print("Generación del formato de etiquetas y alteración aleatoria de imágenes: ")
 for img in tqdm(imgs):
+    copy = img
     outs = yolo.detect(img)
     (img, modified) = ra.random_alter(img)
     results.append(img)
@@ -128,6 +130,8 @@ for img in tqdm(imgs):
     elif modified == 2:
         rotaded += "out-" + str(aux) + "\n"
     aux += 1
+    yolo.post_process(copy)
+    verifications.append(copy)
 
 
 # Save the labeled dataset
@@ -137,12 +141,15 @@ generate_fig(results, target, rows)
 
 #Save resulting images
 print("Guardando los resultados: ")
-result_path = os.path.join(root, "training/result/img_labeled")
+result_path = os.path.join(root, "training/result/outs")
+verification_path = os.path.join(root, "training/result/img_labeled")
 aux = 1
-for (result, string) in tqdm(zip(results, strings)):
+for (result, verification, string) in tqdm(zip(results, verifications, strings)):
     print(string)
     fig_name = os.path.join(result_path, "out-" + str(aux) + ".png")
-    cv2.imwrite(fig_name,result)
+    fv_name = os.path.join(verification_path, "out-" + str(aux) + ".png")
+    cv2.imwrite(fig_name, result)
+    cv2.imwrite(fv_name, verification)
     with open(os.path.join(result_path, "out-" + str(aux) + ".txt"), 'w') as f:
         f.write(string)
     aux += 1

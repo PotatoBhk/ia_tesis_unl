@@ -1,5 +1,6 @@
 from imutils.video import VideoStream
 from detect import yolov4
+from tqdm import tqdm
 import numpy as np
 import os
 import cv2
@@ -8,7 +9,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-        "--resource",
+        "--stream",
     default = False,
     help="Model definition file."
 )
@@ -29,7 +30,7 @@ yolo.set_weights("pretrained_yolov4.weights")
 yolo.initModel()
 result_path = os.path.join(root, "training/raw_dataset")
 
-if(args.resource):
+if(args.stream):
     user = "admin"
     password = "@ezakmi1105"
     ip = "192.168.1.35"
@@ -58,7 +59,7 @@ else:
     path = os.path.join(root, "training/vids")    
     valid_images = [".mpg", ".mp4"]  
     aux = 0  
-    for f in os.listdir(path):
+    for f in tqdm(os.listdir(path)):
         ext = os.path.splitext(f)[1]
         if ext.lower() not in valid_images:
             continue
@@ -79,4 +80,4 @@ else:
         vid.release()
         cv2.destroyAllWindows()
                     
-print(args.resource)
+print(args.stream)
