@@ -2,6 +2,16 @@ from skimage.metrics import structural_similarity as ssim
 import numpy as np
 import os
 import cv2
+from ctypes import wintypes, windll
+from functools import cmp_to_key
+
+def winsort(data):
+    _StrCmpLogicalW = windll.Shlwapi.StrCmpLogicalW
+    _StrCmpLogicalW.argtypes = [wintypes.LPWSTR, wintypes.LPWSTR]
+    _StrCmpLogicalW.restype  = wintypes.INT
+
+    cmp_fnc = lambda psz1, psz2: _StrCmpLogicalW(psz1, psz2)
+    return sorted(data, key=cmp_to_key(cmp_fnc))
 
 # Managing source path
 root = os.path.dirname(__file__)
@@ -18,19 +28,26 @@ raw_path = os.path.join(root, "..", "training/raw_dataset")
 #         continue
 #     imgs.append(cv2.imread(os.path.join(raw_path,f)))
 
-a = cv2.imread(os.path.join(raw_path, "1.png"))
-b = cv2.imread(os.path.join(raw_path, "7.png"))
+paths = winsort(os.listdir(raw_path))
+a = cv2.imread(os.path.join(raw_path, paths[0]))
+b = cv2.imread(os.path.join(raw_path, paths[1]))
+path_a = os.path.join(raw_path,paths[0])
+path_b = os.path.join(raw_path,paths[1])
 
-# Resize images
-a_res = cv2.resize(a, (1024, 768), interpolation = cv2.INTER_CUBIC)
-b_res = cv2.resize(b, (1024, 768), interpolation = cv2.INTER_CUBIC)
+print(path_a)
+print(path_b)
+print(paths)
+
+# # Resize images
+# a_res = cv2.resize(a, (1024, 768), interpolation = cv2.INTER_CUBIC)
+# b_res = cv2.resize(b, (1024, 768), interpolation = cv2.INTER_CUBIC)
 
 # convert the images to grayscale
-a_gray = cv2.cvtColor(a_res, cv2.COLOR_BGR2GRAY)
-b_gray = cv2.cvtColor(b_res, cv2.COLOR_BGR2GRAY)
+a_gray = cv2.cvtColor(a, cv2.COLOR_BGR2GRAY)
+b_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
 
-err = np.sum((a_res.astype("float") - b_res.astype("float")) ** 2)
-err /= float(a_res.shape[0] * b_res.shape[1])
+err = np.sum((a.astype("float") - b.astype("float")) ** 2)
+err /= float(a.shape[0] * b.shape[1])
 
 s = ssim(a_gray, b_gray)
 
