@@ -1,6 +1,7 @@
 from imutils.video import VideoStream
 from detect import yolov4
 from tqdm import tqdm
+from detect import utils
 import numpy as np
 import os
 import cv2
@@ -15,6 +16,9 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
+
+# Invoke utils
+utls = utils.Utils()
 
 # Managing source path
 root = os.path.dirname(__file__)
@@ -57,24 +61,27 @@ if(args.stream):
             cv2.imwrite(fig_name, frame)
 else:
     path = os.path.join(root, "training/vids")    
-    valid_images = [".mpg", ".mp4"]  
-    aux = 0  
-    for f in tqdm(os.listdir(path)):
+    valid_vids = [".mpg", ".mp4"]  
+    aux = 1  
+    for f in tqdm(utls.winsort(os.listdir(path))):
         ext = os.path.splitext(f)[1]
-        if ext.lower() not in valid_images:
+        if ext.lower() not in valid_vids:
             continue
         vid = cv2.VideoCapture(os.path.join(path,f))
         if (vid.isOpened() == False):
-            continue        
+            continue
+        last = np.asarray([]);     
         while(vid.isOpened()):
             ret, frame = vid.read()
             if(ret == True):
                 outs = yolo.detect(frame)
                 index = np.argwhere(outs[0] == 0)
                 if(len(index) > 0):
-                    aux += 1
-                    fig_name = os.path.join(result_path, "vid-" + str(aux) + ".png")
-                    cv2.imwrite(fig_name, frame)
+                    if(utls.equality(last, frame) <= 0.60):
+                        last = frame                    
+                        aux += 1
+                        fig_name = os.path.join(result_path, "vid-1-" + str(aux) + ".png")
+                        cv2.imwrite(fig_name, frame)
             else:
                 break
         vid.release()

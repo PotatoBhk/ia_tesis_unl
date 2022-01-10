@@ -9,6 +9,13 @@ raw_path = os.path.join(root, "..", "training/raw_dataset")
 
 tst_dir = os.listdir(raw_path)
 
+a = [3,2,4]
+
+if 3 not in a:
+    print("in")
+else:
+    print("out")
+
 print(len(tst_dir))
 
 tst_dir = np.asarray(tst_dir)

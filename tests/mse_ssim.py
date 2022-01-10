@@ -29,14 +29,13 @@ raw_path = os.path.join(root, "..", "training/raw_dataset")
 #     imgs.append(cv2.imread(os.path.join(raw_path,f)))
 
 paths = winsort(os.listdir(raw_path))
-a = cv2.imread(os.path.join(raw_path, paths[0]))
-b = cv2.imread(os.path.join(raw_path, paths[1]))
-path_a = os.path.join(raw_path,paths[0])
-path_b = os.path.join(raw_path,paths[1])
+a = cv2.imread(os.path.join(raw_path, paths[2]))
+b = cv2.imread(os.path.join(raw_path, paths[3]))
+path_a = os.path.join(raw_path,paths[2])
+path_b = os.path.join(raw_path,paths[3])
 
 print(path_a)
 print(path_b)
-print(paths)
 
 # # Resize images
 # a_res = cv2.resize(a, (1024, 768), interpolation = cv2.INTER_CUBIC)
