@@ -50,11 +50,12 @@ class Yolo():
         start_time = time.time()
         #Post processing the image with the output predictions
         for (classId, score, box) in zip(outs[0], outs[1], outs[2]):
-            cv2.rectangle(frm, (box[0], box[1]), (box[0] + box[2], box[1] + box[3]),
-                        color=(0, 255, 0), thickness=2)
-            text = '%s: %.2f' % (self._classes[classId], score)
-            cv2.putText(frm, text, (box[0], box[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                        color=(0, 255, 0), thickness=3)
+            if classId == 0:
+                cv2.rectangle(frm, (box[0], box[1]), (box[0] + box[2], box[1] + box[3]),
+                            color=(0, 255, 0), thickness=2)
+                text = '%s: %.2f' % (self._classes[classId], score)
+                cv2.putText(frm, text, (box[0], box[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                            color=(0, 255, 0), thickness=3)
         #Get processing time
         self._postprocess_time = time.time() - start_time
 

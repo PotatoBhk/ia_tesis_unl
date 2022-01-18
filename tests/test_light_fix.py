@@ -14,7 +14,7 @@ def adjust_gamma(image, gamma=1.0):
 root = os.path.dirname(__file__)
 raw_path = os.path.join(root, "..", "training/raw_dataset")
 
-x = os.path.join(raw_path, "1.png")  #location of the image
+x = os.path.join(raw_path, "vid-1.png")  #location of the image
 original = cv2.imread(x, 1)
 cv2.imshow('original',original)
 

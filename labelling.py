@@ -1,10 +1,15 @@
 from detect import yolov4
 from tqdm import tqdm
+from detect import utils
+from random import sample, seed
 import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import random_alter
+
+#Loading utils
+utls = utils.Utils()
 
 # Managing source path
 root = os.path.dirname(__file__)
@@ -24,21 +29,19 @@ cols = 10
 ra = random_alter.ImageAlt()
 
 # Function to load images
-def load_imgs(folder):
+def load_imgs(p):
     # Upload raw images
-    imgs = []
-    path = os.path.join(root, folder)
-    valid_images = [".jpg", ".png"]
-    
+    imgs = []    
+    valid_images = [".jpg", ".png"]        
     print("Cargando imágenes: ")
-    for f in tqdm(os.listdir(path)):
+    for f in tqdm(p):
         ext = os.path.splitext(f)[1]
         if ext.lower() not in valid_images:
             continue
         imgs.append(cv2.imread(os.path.join(path,f)))
     print(len(imgs), " imágenes encontradas...")
 
-    return imgs
+    return (imgs, len(p))
 
 # Function to generate figures for analysis
 def generate_fig(imgs, target, rows):
@@ -46,7 +49,7 @@ def generate_fig(imgs, target, rows):
     plt.figure()
     f, axs = plt.subplots(rows, cols)
     r, c = (0, 0)
-    imgs = np.multiply(imgs, 1/255.0)
+    imgs = np.multiply(imgs, 1/255.0, dtype=object)
 
     #Add images to figure
     if(rows > 1):
@@ -87,8 +90,8 @@ def format_outs(outs, shape, modified):
     #Iter arrays
     for (classId, box) in zip(classesId, boxes):
         if modified == 2:
-            y_center = ((box[2]/2) + box[0])/shape[1] #TODO (((b - a)/2) + a) / width
-            x_center = ((box[3]/2) + box[1])/shape[0]
+            y_center = (box[0] + (box[2]/2))/shape[1] #TODO (((b - a)/2) + a) / width
+            x_center = (box[1] - (box[3]/2))/shape[0]
             height = box[2]/shape[1]
             width = box[3]/shape[0]
         else:
@@ -104,55 +107,75 @@ def format_outs(outs, shape, modified):
     return text
 
 # Save the raw dataset
-imgs = load_imgs('training/raw_dataset')
-rows = np.ceil(len(imgs) / cols).astype(np.dtype(int))
-target = 'training/result/media/fig_rawdataset.png'
-print("Generación de figura de dataset sin procesar: ")
-generate_fig(imgs, target, rows)
+path = os.path.join(root, 'training/raw_dataset')
+npaths = utls.winsort(os.listdir(path))
+npaths = np.asarray(npaths, dtype=object)
+npaths = np.array_split(npaths, 1)
+nouts = 854
+aux = 854
+for p in npaths:
+    (imgs, l) = load_imgs(p)
+    # rows = np.ceil(len(imgs) / cols).astype(np.dtype(int))
+    # target = 'training/result/media/fig_rawdataset.png'
+    # print("Generación de figura de dataset sin procesar: ")
+    # generate_fig(imgs, target, rows)
+    #Detect objects to label in the group of images
+    results = []
+    verifications = []
+    strings = []
+    rotaded = "Imágenes rotadas: \n"
+    fix_ilum = "Imágenes con la iluminación alterada: \n"
+    yolo.initModel()
+    print("Generación del formato de etiquetas y alteración aleatoria de imágenes: ")
+    for img in tqdm(imgs):
+        copy = img.copy()
+        outs = yolo.detect(img)
+        (img, modified) = ra.random_alter(img)
+        results.append(img)
+        strings.append(format_outs(outs, img.shape, modified))
+        if modified == 1:
+            fix_ilum += "out-" + str(aux) + "\n"
+        elif modified == 2:
+            rotaded += "out-" + str(aux) + "\n"
+        aux += 1
+        yolo.post_process(outs, copy)
+        verifications.append(copy)
 
-#Detect objects to label in the group of images
-results = []
-verifications = []
-strings = []
-rotaded = "Imágenes rotadas: \n"
-fix_ilum = "Imágenes con la iluminación alterada: \n"
-aux = 1
-yolo.initModel()
-print("Generación del formato de etiquetas y alteración aleatoria de imágenes: ")
-for img in tqdm(imgs):
-    copy = img
-    outs = yolo.detect(img)
-    (img, modified) = ra.random_alter(img)
-    results.append(img)
-    strings.append(format_outs(outs, img.shape, modified))
-    if modified == 1:
-        fix_ilum += "out-" + str(aux) + "\n"
-    elif modified == 2:
-        rotaded += "out-" + str(aux) + "\n"
-    aux += 1
-    yolo.post_process(copy)
-    verifications.append(copy)
 
+    # # Save the labeled dataset
+    # print("Generación de figura de dataset procesado: ")
+    # target = 'training/result/media/fig_labeled.png'
+    # generate_fig(results, target, rows)
 
-# Save the labeled dataset
-print("Generación de figura de dataset procesado: ")
-target = 'training/result/media/fig_labeled.png'
-generate_fig(results, target, rows)
+    #Save resulting images
+    print("Guardando los resultados: ")
+    result_path = os.path.join(root, "training/result/outs")
+    test_path = os.path.join(root, "training/result/tests")
+    verification_path = os.path.join(root, "training/result/img_labeled")
 
-#Save resulting images
-print("Guardando los resultados: ")
-result_path = os.path.join(root, "training/result/outs")
-verification_path = os.path.join(root, "training/result/img_labeled")
-aux = 1
-for (result, verification, string) in tqdm(zip(results, verifications, strings)):
-    print(string)
-    fig_name = os.path.join(result_path, "out-" + str(aux) + ".png")
-    fv_name = os.path.join(verification_path, "out-" + str(aux) + ".png")
-    cv2.imwrite(fig_name, result)
-    cv2.imwrite(fv_name, verification)
-    with open(os.path.join(result_path, "out-" + str(aux) + ".txt"), 'w') as f:
-        f.write(string)
-    aux += 1
+    seed(1)
+    smpl = np.ceil(l * 0.2).astype(np.dtype(int))
+    tests_images = sample(results, smpl)
 
-with open(os.path.join(result_path, "imgs_modified.txt"), 'w') as f:
-    f.write(rotaded + fix_ilum)
+    for (result, verification, string) in tqdm(zip(results, verifications, strings)):
+        eq = False
+        for test in tests_images:
+            if utls.equality(test, result) == 1.0:
+                eq = True
+                break
+
+        if eq:
+            root = test_path
+        else:
+            root = result_path
+
+        fig_name = os.path.join(root, "out-" + str(nouts) + ".png")
+        fv_name = os.path.join(verification_path, "out-" + str(nouts) + ".png")
+        cv2.imwrite(fig_name, result)
+        cv2.imwrite(fv_name, verification)
+        with open(os.path.join(root, "out-" + str(nouts) + ".txt"), 'w') as f:
+            f.write(string)
+        nouts += 1
+
+    with open(os.path.join(result_path, "imgs_modified.txt"), 'w') as f:
+        f.write(rotaded + fix_ilum)

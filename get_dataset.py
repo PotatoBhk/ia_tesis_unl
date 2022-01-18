@@ -77,10 +77,10 @@ else:
                 outs = yolo.detect(frame)
                 index = np.argwhere(outs[0] == 0)
                 if(len(index) > 0):
-                    if(utls.equality(last, frame) <= 0.60):
+                    if(utls.equality(last, frame) <= 0.70):
                         last = frame                    
                         aux += 1
-                        fig_name = os.path.join(result_path, "vid-1-" + str(aux) + ".png")
+                        fig_name = os.path.join(result_path, "vid-2-" + str(aux) + ".png")
                         cv2.imwrite(fig_name, frame)
             else:
                 break

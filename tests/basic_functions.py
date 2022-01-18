@@ -11,7 +11,7 @@ root = os.path.dirname(__file__)
 raw_path = os.path.join(root, "..", "training/raw_dataset")
 
 # ---------------
-a = cv2.imread(os.path.join(raw_path, "1.png"))
+a = cv2.imread(os.path.join(raw_path, "vid-1.png"))
 print(a.shape)
 print("-----------------")
 for i in range(10):
@@ -26,8 +26,8 @@ print(b[1:3])
 print("-------------------")
 print("Buscando y cargando archivos de imagen válido: ...")
 d = os.listdir(raw_path)
-for path in tqdm(d):
-    print(path)
+# for path in tqdm(d):
+#     print(path)
 
 #---------------------------
 # print("-------------------")

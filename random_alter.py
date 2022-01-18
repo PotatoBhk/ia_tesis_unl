@@ -25,9 +25,9 @@ class ImageAlt():
       n = np.round(random(), 2)
       res = image
       if n >= 0.25 and n < 0.50:
-        res = self.adjust_gamma(image, (random()*0.3))
+        res = self.adjust_gamma(image, ((random() + 0.5) * 2))
         modified = 1
-      elif n < 0.25:
+      elif n < 0.1:
         res = self.rotate_image(image)
         modified = 2
       return (res, modified)
