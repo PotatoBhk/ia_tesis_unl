@@ -32,7 +32,7 @@ yolo.set_configFile("pretrained_yolov4.cfg")
 yolo.set_weights("pretrained_yolov4.weights")
 
 yolo.initModel()
-result_path = os.path.join(root, "training/raw_dataset")
+result_path = "D:/training/raw_dataset"
 
 if(args.stream):
     user = "admin"
@@ -60,7 +60,7 @@ if(args.stream):
             fig_name = os.path.join(result_path, "stream-" + str(aux) + ".png")
             cv2.imwrite(fig_name, frame)
 else:
-    path = os.path.join(root, "training/vids")    
+    path = "D:/training/vids"  
     valid_vids = [".mpg", ".mp4"]  
     aux = 1  
     for f in tqdm(utls.winsort(os.listdir(path))):
@@ -77,10 +77,10 @@ else:
                 outs = yolo.detect(frame)
                 index = np.argwhere(outs[0] == 0)
                 if(len(index) > 0):
-                    if(utls.equality(last, frame) <= 0.70):
+                    if(utls.equality(last, frame) <= 0.75):
                         last = frame                    
                         aux += 1
-                        fig_name = os.path.join(result_path, "vid-2-" + str(aux) + ".png")
+                        fig_name = os.path.join(result_path, "vid-4-" + str(aux) + ".png")
                         cv2.imwrite(fig_name, frame)
             else:
                 break

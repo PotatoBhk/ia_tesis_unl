@@ -90,8 +90,8 @@ def format_outs(outs, shape, modified):
     #Iter arrays
     for (classId, box) in zip(classesId, boxes):
         if modified == 2:
-            y_center = (box[0] + (box[2]/2))/shape[1] #TODO (((b - a)/2) + a) / width
-            x_center = (box[1] - (box[3]/2))/shape[0]
+            y_center = ((box[2]/2) + box[0])/shape[1]
+            x_center = (shape[0] - box[1] - (box[3]/2))/shape[0]
             height = box[2]/shape[1]
             width = box[3]/shape[0]
         else:

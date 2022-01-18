@@ -14,8 +14,9 @@ def format_outs(outs, shape, modified):
     #Iter arrays
     for (classId, box) in zip(classesId, boxes):
         if modified == 2:
-            y_center = (box[0] + (box[2]/2))/shape[1] #TODO (((b - a)/2) + a) / width
-            x_center = (box[1] - (box[3]/2))/shape[0]
+            print(box)
+            y_center = ((box[2]/2) + box[0])/shape[1] #TODO (((b - a)/2) + a) / width
+            x_center = (shape[0] - box[1] - (box[3]/2))/shape[0]
             height = box[2]/shape[1]
             width = box[3]/shape[0]
         else:
@@ -64,6 +65,12 @@ formatted = format_outs(outs, a.shape, 2)
 
 
 fig_name = os.path.join(result_path, "out-test.png")
+image_rot = cv2.rotate(a, cv2.ROTATE_90_CLOCKWISE)
+
+cv2.imwrite(fig_name, image_rot)
+
+with open(os.path.join(result_path, "out-test.txt"), 'w') as f:
+    f.write(formatted)
 
 
 
