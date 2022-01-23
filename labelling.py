@@ -134,9 +134,9 @@ for p in npaths:
         results.append(img)
         strings.append(format_outs(outs, img.shape, modified))
         if modified == 1:
-            fix_ilum += "out-" + str(aux) + "\n"
+            fix_ilum += "out-plus-" + str(aux) + "\n"
         elif modified == 2:
-            rotaded += "out-" + str(aux) + "\n"
+            rotaded += "out-plus-" + str(aux) + "\n"
         aux += 1
         yolo.post_process(outs, copy)
         verifications.append(copy)
@@ -169,11 +169,11 @@ for p in npaths:
         else:
             root = result_path
 
-        fig_name = os.path.join(root, "out-" + str(nouts) + ".png")
-        fv_name = os.path.join(verification_path, "out-" + str(nouts) + ".png")
+        fig_name = os.path.join(root, "out-plus-" + str(nouts) + ".png")
+        fv_name = os.path.join(verification_path, "out-plus-" + str(nouts) + ".png")
         cv2.imwrite(fig_name, result)
         cv2.imwrite(fv_name, verification)
-        with open(os.path.join(root, "out-" + str(nouts) + ".txt"), 'w') as f:
+        with open(os.path.join(root, "out-plus-" + str(nouts) + ".txt"), 'w') as f:
             f.write(string)
         nouts += 1
 

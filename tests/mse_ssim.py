@@ -37,6 +37,8 @@ path_b = os.path.join(raw_path,paths[0])
 print(path_a)
 print(path_b)
 
+print(a.shape)
+
 # # Resize images
 # a_res = cv2.resize(a, (1024, 768), interpolation = cv2.INTER_CUBIC)
 # b_res = cv2.resize(b, (1024, 768), interpolation = cv2.INTER_CUBIC)

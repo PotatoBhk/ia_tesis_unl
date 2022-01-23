@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Video Streaming Demonstration</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Video Streaming Demonstration</h1>
-    <script type='application/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'></script>
-    <script type='application/javascript'>
-        $(document).ready(function() {
-            $.ajax('/test', {
-                xhrFields: {
-                    onprogress: function(e)
-                    {
-                        console.log("onprogress: " + JSON.parse(e));
-                    }
-                }
-            })
-            .done(function(data)
-            {
-                console.log('Complete response = ' + data);
-            })
-            .fail(function(data)
-            {
-                console.log('Error: ', data);
-            });
-            console.log('Request Sent');
-        });
+    <script
+      type="application/javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"
+    ></script>
+    <script type="application/javascript">
+      $(document).ready(function () {
+        $.ajax("/test", {
+          xhrFields: {
+            onprogress: function (e) {
+              console.log("onprogress: " + JSON.parse(e));
+            },
+          },
+        })
+          .done(function (data) {
+            console.log("Complete response = " + data);
+          })
+          .fail(function (data) {
+            console.log("Error: ", data);
+          });
+        console.log("Request Sent");
+      });
     </script>
-</body>
+  </body>
 </html>
