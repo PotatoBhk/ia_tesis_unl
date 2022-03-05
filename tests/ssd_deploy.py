@@ -17,7 +17,7 @@ classNames = { 0: 'background',
     17: 'sheep', 18: 'sofa', 19: 'train', 20: 'tvmonitor' }
 
 #Load test image
-image_path = os.path.join(test_folder, "media/test.jpg")
+image_path = os.path.join(test_folder, "media/test2.png")
 
 #Load the Caffe model 
 prototxt = os.path.join(root, "sources/ssd/deploy.prototxt")
@@ -26,24 +26,24 @@ weights = os.path.join(root, "sources/ssd/model.caffemodel")
 #General params
 threshold = 0.5
 
-net = cv2.dnn.readNetFromCaffe(prototxt, weights)
-
 frame = cv2.imread(image_path)
 frame_resized = cv2.resize(frame,(300,300), interpolation = cv2.INTER_CUBIC)
-blob = cv2.dnn.blobFromImage(frame_resized, 0.007843, (300, 300), (127.5, 127.5, 127.5), False)
 
+#Load detection model
+start_time = time.time()
+net = cv2.dnn.readNetFromCaffe(prototxt, weights)
+print("Tiempo de carga del algoritmo: %s segundos" % (time.time() - start_time))
+
+start_time = time.time()
+blob = cv2.dnn.blobFromImage(frame_resized, 0.007843, (300, 300), (127.5, 127.5, 127.5), False)
 #Set to network the input blob 
 net.setInput(blob)
-
-start_time = time.time()
 #Prediction of network
 detections = net.forward()
-print("--- %s seconds --- 1" % (time.time() - start_time))
+print("Tiempo de detección: %s segundos" % (time.time() - start_time))
 
-
-
+#POSTPROCESS
 start_time = time.time()
-#-------------
 index = np.argwhere(detections[0][0][:,2]>threshold)
 index = index[:,0]
 
@@ -51,12 +51,6 @@ class_ids = detections[0][0][index,1]
 scores = detections[0][0][index,2]
 x_points = np.vstack((detections[0][0][index,3], detections[0][0][index,5])).T
 y_points = np.vstack((detections[0][0][index,4], detections[0][0][index,6])).T
-
-print(x_points)
-print(y_points)
-#--------------
-print("--- %s seconds --- 2" % (time.time() - start_time))
-
 #Resize and scale points
 rows = frame_resized.shape[0]
 cols = frame_resized.shape[1] 
@@ -66,16 +60,11 @@ widthFactor = frame.shape[1]/cols
 
 x_points = np.multiply(x_points, (cols * widthFactor)).astype(np.dtype(int))
 y_points = np.multiply(y_points, (rows * heightFactor)).astype(np.dtype(int))
-# x_points = int(x_points * cols * widthFactor)
-# y_points = int(y_points * rows * heightFactor)
-print(x_points)
-print(y_points)
-print("--- %s seconds --- 3" % (time.time() - start_time))
 
 for(class_id, score, x, y) in zip(
         class_ids, scores, x_points, y_points):
     cv2.rectangle(frame, (x[0], y[0]), (x[1], y[1]),
-                        (0, 255, 0))
+                        (0, 255, 0), thickness=2)
     label = classNames[class_id] + ": " + str(score)
     labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
 
@@ -86,8 +75,6 @@ for(class_id, score, x, y) in zip(
     cv2.putText(frame, label, (x[0], y_lb),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
-cv2.imshow("frame", frame) 
+print("Tiempo del post-proceso: %s segundos" % (time.time() - start_time))
 
-while True:
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+cv2.imwrite(os.path.join(test_folder, "media/out_ssd.png"), frame)

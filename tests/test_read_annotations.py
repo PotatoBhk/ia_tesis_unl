@@ -18,8 +18,8 @@ def winsort(data):
 root = os.path.dirname(__file__)
 raw_path = os.path.join(root, "..", "training/result/outs")
 paths = winsort(os.listdir(raw_path))
-img = cv2.imread(os.path.join(raw_path, paths[0]))
-txt = os.path.join(raw_path, paths[0].replace(".png", ".txt"))
+img = cv2.imread(os.path.join(raw_path, paths[20]))
+txt = os.path.join(raw_path, paths[20].replace(".png", ".txt"))
 
 print(img.shape[0])
 

@@ -23,11 +23,10 @@ def run_model(ch = 1):
     vid = VideoStream(rtsp_url).start()
     while (True):
         frame = vid.read()
-        detections = ssd.detect(frame)
-        outs = ssd.format_output(detections)
-        img = ssd.postprocess(frame,outs)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        res = cv2.imencode('.jpeg', gray)[1].tobytes()
+        # detections = ssd.detect(frame)
+        # outs = ssd.format_output(detections)
+        # img = ssd.postprocess(frame,outs)
+        res = cv2.imencode('.jpeg', frame)[1].tobytes()
         yield (b'--frame\r\n'
             b'Content-Type: image/jpeg\r\n\r\n' + res + b'\r\n')
 

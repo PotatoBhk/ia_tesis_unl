@@ -22,17 +22,17 @@ utls = utils.Utils()
 
 # Managing source path
 root = os.path.dirname(__file__)
-yolo_sources = os.path.join(root, "sources/yolo")
+yolo_sources = utls.join_path(root, "sources/yolo")
 
 # Getting Yolo instance
-yolo = yolov4.Yolo(os.path.realpath(yolo_sources))
+yolo = yolov4.Yolo(yolo_sources)
 
 # Setting config, weights and names
 yolo.set_configFile("pretrained_yolov4.cfg")
 yolo.set_weights("pretrained_yolov4.weights")
 
 yolo.initModel()
-result_path = "D:/training/raw_dataset"
+result_path = utls.join_path(root, "training/raw_dataset")
 
 if(args.stream):
     user = "admin"
@@ -60,7 +60,7 @@ if(args.stream):
             fig_name = os.path.join(result_path, "stream-" + str(aux) + ".png")
             cv2.imwrite(fig_name, frame)
 else:
-    path = "D:/training/vids"  
+    path = utls.join_path(root, "training/vids") 
     valid_vids = [".mpg", ".mp4"]  
     aux = 1  
     for f in tqdm(utls.winsort(os.listdir(path))):
